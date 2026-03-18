@@ -1,18 +1,24 @@
-name: Verilog CI
+name: Verilog Simulation CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 jobs:
-  build:
+  simulate:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-      - name: Install Icarus Verilog
-        run: sudo apt-get update && sudo apt-get install -y iverilog
+    - name: Install Icarus Verilog
+      run: sudo apt-get update && sudo apt-get install -y iverilog
 
-      - name: Syntax Check
-        run: |
-          # Compiles all .v files in src to check for syntax errors
-          iverilog -o design_check src/*.v
+    - name: Compile Design + Testbench
+      run: |
+        iverilog -o sim.vvp src/*.v testbench/processor_top_testbench.v
+
+    - name: Run Simulation
+      run: |
+        vvp sim.vvp
